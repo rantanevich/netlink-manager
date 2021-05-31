@@ -1,0 +1,58 @@
+---
+- name: prepares a server to serve application
+  hosts: all
+  become: yes
+  gather_facts: no
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+    - name: ensure system dependencies are installed
+      yum: name={{ item }} state=present
+      loop:
+        - python3
+        - python-setuptools
+        - git
+
+  roles:
+    - gunicorn
+
+  post_tasks:
+    - name: checkout the latest app version
+      git:
+        repo: https://github.com/rantanevich/netlink-manager.git
+        dest: "{{ gunicorn_app_dir }}"
+        update: yes
+      notify: restart_gunicorn
+
+    - name: ensure ownership is correct
+      file:
+        path: "{{ gunicorn_app_dir }}"
+        owner: "{{ gunicorn_user }}"
+        group: "{{ gunicorn_user }}"
+        recurse: yes
+        state: directory
+      notify: restart_gunicorn
+
+    - name: checks if .env file exists
+      stat: path={{ gunicorn_app_dir }}/.env
+      register: env_file
+
+    - name: generate SECRET_KEY
+      set_fact:
+        flask_secret_key: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}"
+      when: env_file.stat.exists
+
+    - name: ensure .env file has SECRET_KEY variable
+      lineinfile:
+        path: "{{ gunicorn_app_dir }}/.env"
+        regexp: "^SECRET_KEY="
+        line: "SECRET_KEY={{ flask_secret_key }}"
+        create: yes
+      when: env_file.stat.exists
+      notify: restart_gunicorn
+
+  handlers:
+    - name: restart_gunicorn
+      systemd: name={{ gunicorn_app_name }} state=restart

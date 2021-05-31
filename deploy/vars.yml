@@ -1,0 +1,7 @@
+---
+gunicorn_bind: 0.0.0.0:8000
+gunicorn_wsgi: server:app
+gunicorn_workers: 2
+gunicorn_user: root
+gunicorn_app_name: netlink-manager
+gunicorn_app_dir: /opt/{{ gunicorn_app_name }}

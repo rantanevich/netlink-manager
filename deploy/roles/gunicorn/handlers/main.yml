@@ -1,0 +1,3 @@
+---
+- name: restart_gunicorn
+  systemd: name={{ gunicorn_app_name }} state=restarted

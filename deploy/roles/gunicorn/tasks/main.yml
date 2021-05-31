@@ -1,0 +1,46 @@
+---
+- name: ensure gunicorn is installed
+  pip:
+    name: gunicorn
+    version: "{{ gunicorn_version }}"
+    executable: pip3
+    state: present
+
+- name: ensure guncorn user exists
+  user:
+    name: "{{ gunicorn_user }}"
+    create_home: yes
+    shell: /bin/bash
+    state: present
+
+- name: ensure /etc/gunicorn exists
+  file:
+    name: /etc/gunicorn
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
+- name: ensure gunicorn app config is created and up-to-date
+  template:
+    src: gunicorn.py.j2
+    dest: /etc/gunicorn/{{ gunicorn_app_name }}.py
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_gunicorn
+
+- name: ensure systemd service is created and up-to-date
+  template:
+    src: systemd.service.j2
+    dest: /etc/systemd/system/{{ gunicorn_app_name }}.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_gunicorn
+
+- name: ensure gunicorn service is enabled
+  systemd:
+    name: "{{ gunicorn_app_name }}.service"
+    enabled: yes
+    daemon_reload: yes
