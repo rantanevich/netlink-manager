@@ -6,6 +6,15 @@
     executable: pip3
     state: present
 
+- name: create a symbolic link
+  file:
+    src: /usr/local/bin/gunicorn
+    dest: /usr/bin/gunicorn
+    owner: root
+    group: root
+    mode: 0755
+    state: link
+
 - name: ensure guncorn user exists
   user:
     name: "{{ gunicorn_user }}"

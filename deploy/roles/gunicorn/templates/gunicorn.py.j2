@@ -5,7 +5,7 @@ pidfile = '/run/{{ gunicorn_app_name }}.pid'
 
 workers = {{ gunicorn_workers }}
 worker_tmp_dir = '{{ gunicorn_worker_tmp_dir }}'
-timeout = {{ gunicorn_workers }}
+timeout = {{ gunicorn_timeout }}
 
 accesslog = '{{ gunicorn_access_log }}'
 errorlog = '{{ gunicorn_error_log }}'

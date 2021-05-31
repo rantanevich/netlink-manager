@@ -26,6 +26,12 @@
         update: yes
       notify: restart_gunicorn
 
+    - name: ensure python dependencies are installed
+      pip:
+        requirements: "{{ gunicorn_app_dir }}/requirements.txt"
+        executable: pip3
+        state: present
+
     - name: ensure ownership is correct
       file:
         path: "{{ gunicorn_app_dir }}"
@@ -55,4 +61,4 @@
 
   handlers:
     - name: restart_gunicorn
-      systemd: name={{ gunicorn_app_name }} state=restart
+      systemd: name={{ gunicorn_app_name }} state=restarted
