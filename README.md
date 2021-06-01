@@ -14,12 +14,12 @@ Web UI to manage static routes and network addresses with netlink.
 
 ## Installation
 
-Prepare a server and install the latest application's version:
+Prepare a server and install the latest version:
 ```sh
 ansible-playbook -i srv-app-01, deploy/main.yml
 ```
 
-Update the application:
+Updating:
 ```sh
 ansible-playbook -i srv-app-01, deploy/deploy.yml
 ```
@@ -27,11 +27,8 @@ ansible-playbook -i srv-app-01, deploy/deploy.yml
 
 ## Usage
 
-Information about static routes and network addresses:
 ![plot](./docs/index.jpg)
 
-Adding and deleting static routes:
 ![plot](./docs/routes.jpg)
 
-Adding and deleting network addresses:
 ![plot](./docs/addresses.jpg)
