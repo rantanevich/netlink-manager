@@ -1,5 +1,5 @@
 ---
-- name: prepares a server to serve application
+- name: deploy the latest version of application
   hosts: all
   become: yes
   gather_facts: no
@@ -7,18 +7,7 @@
   vars_files:
     - vars.yml
 
-  pre_tasks:
-    - name: ensure system dependencies are installed
-      yum: name={{ item }} state=present
-      loop:
-        - python3
-        - python-setuptools
-        - git
-
-  roles:
-    - gunicorn
-
-  post_tasks:
+  tasks:
     - name: checkout the latest app version
       git:
         repo: https://github.com/rantanevich/netlink-manager.git
@@ -48,7 +37,7 @@
     - name: generate SECRET_KEY
       set_fact:
         flask_secret_key: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}"
-      when: env_file.stat.exists
+      when: not env_file.stat.exists
 
     - name: ensure .env file has SECRET_KEY variable
       lineinfile:
@@ -56,7 +45,7 @@
         regexp: "^SECRET_KEY="
         line: "SECRET_KEY={{ flask_secret_key }}"
         create: yes
-      when: env_file.stat.exists
+      when: not env_file.stat.exists
       notify: restart_gunicorn
 
   handlers:

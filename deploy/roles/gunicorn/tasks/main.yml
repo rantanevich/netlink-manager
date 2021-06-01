@@ -37,7 +37,6 @@
     owner: root
     group: root
     mode: 0644
-  notify: restart_gunicorn
 
 - name: ensure systemd service is created and up-to-date
   template:
@@ -46,7 +45,6 @@
     owner: root
     group: root
     mode: 0644
-  notify: restart_gunicorn
 
 - name: ensure gunicorn service is enabled
   systemd:

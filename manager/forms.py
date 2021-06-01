@@ -8,8 +8,8 @@ from manager.models import RouteTable, NetworkInterfaces
 
 
 class RouteTableForm(FlaskForm):
-    dst = StringField('Destination', [DataRequired()])
-    gateway = StringField('Gateway', [DataRequired(), IPAddress()])
+    dst = StringField('Destination', validators=[DataRequired()])
+    gateway = StringField('Gateway', validators=[DataRequired(), IPAddress()])
     submit = SubmitField('Apply')
 
     def validate_dst(form, field):
@@ -31,9 +31,13 @@ class RouteTableForm(FlaskForm):
 
 
 class NetworkInterfacesForm(FlaskForm):
-    address = StringField('Address', [DataRequired()])
-    ifname = SelectField('Interface', choices=NetworkInterfaces.interfaces())
+    address = StringField('Address', validators=[DataRequired()])
+    ifname = SelectField('Interface', validators=[DataRequired()])
     submit = SubmitField('Apply')
+
+    def __init__(self, *args, **kwargs):
+        FlaskForm.__init__(self, *args, **kwargs)
+        self.ifname.choices = NetworkInterfaces.interfaces()
 
     def validate_address(form, field):
         try:
