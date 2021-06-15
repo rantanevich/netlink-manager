@@ -16,12 +16,26 @@ Web UI to manage static routes and network addresses with netlink.
 
 Prepare a server and install the latest version:
 ```sh
-ansible-playbook -i srv-app-01, deploy/main.yml
+# without HTTP(s) proxy
+ansible-playbook -i srv-app-01, deploy/main.yml -e ansible_user=sshuser
+
+# with HTTP(s) proxy
+ansible-playbook -i srv-app-01, deploy/main.yml \
+                 -e ansible_user=sshuser \
+                 -e http_proxy='http://user:pass@host:port' \
+                 -e https_proxy='http://user:pass@host:port'
 ```
 
 Updating:
 ```sh
-ansible-playbook -i srv-app-01, deploy/deploy.yml
+# without HTTP(s) proxy
+ansible-playbook -i srv-app-01, deploy/main.yml -e ansible_user=sshuser
+
+# with HTTP(s) proxy
+ansible-playbook -i srv-app-01, deploy/deploy.yml \
+                 -e ansible_user=sshuser \
+                 -e http_proxy='http://user:pass@host:port' \
+                 -e https_proxy='http://user:pass@host:port'
 ```
 
 
