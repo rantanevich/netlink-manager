@@ -4,8 +4,11 @@ function sortColumns(elem_id, key, fields) {
       valueNames: fields
     };
 
-    var fieldList = new List(elem_id, options);
-    fieldList.sort(key, {order: 'asc'});
+    var elem = document.getElementById(elem_id);
+    if (elem.querySelectorAll('table > .list > tr').length) {
+      var fieldList = new List(elem_id, options);
+      fieldList.sort(key, {order: 'asc'});
+    }
   }
 }
 

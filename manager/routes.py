@@ -11,7 +11,7 @@ from manager.structures import Route, Address
 @app.get('/')
 def index():
     return render_template('index.html',
-                           title='Main',
+                           title=f'{gethostname()} | Main',
                            hostname=gethostname(),
                            routes=RouteTable.static_routes(),
                            addresses=NetworkInterfaces.addresses())
@@ -30,7 +30,7 @@ def routes():
         flash(f'Route "{route}" has been added', 'success')
         return redirect(url_for('routes'))
     return render_template('routes.html',
-                           title='Routes',
+                           title=f'{gethostname()} | Routes',
                            hostname=gethostname(),
                            form=form,
                            routes=RouteTable.static_routes(),
@@ -62,7 +62,7 @@ def addresses():
         flash(f'Address "{address}" has been added', 'success')
         return redirect(url_for('addresses'))
     return render_template('addresses.html',
-                           title='Addresses',
+                           title=f'{gethostname()} | Addresses',
                            hostname=gethostname(),
                            form=form,
                            addresses=NetworkInterfaces.addresses())

@@ -2,7 +2,10 @@
 - name: deploy the latest version of application
   hosts: all
   become: yes
-  gather_facts: no
+  gather_facts: yes
+  environment:
+    http_proxy: "{{ http_proxy | default }}"
+    https_proxy: "{{ https_proxy | default }}"
 
   vars_files:
     - vars.yml
@@ -20,6 +23,8 @@
         requirements: "{{ gunicorn_app_dir }}/requirements.txt"
         executable: pip3
         state: present
+      notify: restart_gunicorn
+      tags: dev
 
     - name: ensure ownership is correct
       file:
@@ -34,17 +39,14 @@
       stat: path={{ gunicorn_app_dir }}/.env
       register: env_file
 
-    - name: generate SECRET_KEY
-      set_fact:
-        flask_secret_key: "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}"
-      when: not env_file.stat.exists
-
-    - name: ensure .env file has SECRET_KEY variable
-      lineinfile:
-        path: "{{ gunicorn_app_dir }}/.env"
-        regexp: "^SECRET_KEY="
-        line: "SECRET_KEY={{ flask_secret_key }}"
-        create: yes
+    - name: create .env file with project settings (if doesn't exist)
+      copy:
+        content: |
+          SECRET_KEY={{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=32') }}
+        dest: "{{ gunicorn_app_dir }}/.env"
+        owner: "{{ gunicorn_user }}"
+        group: "{{ gunicorn_user }}"
+        mode: 0644
       when: not env_file.stat.exists
       notify: restart_gunicorn
 
